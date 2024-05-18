@@ -40,7 +40,18 @@ export default function Annotate() {
       hasRotatingPoint: false,
       lockRotation: true,
     });
+
+    // On rect transform
+    function onChange(e: fabric.IEvent) {
+      console.log(e.target?.left + ' ' + e.target?.top);
+    }
+
     canvas.add(rect);
+
+    canvas.on({
+      'object:moving': onChange,
+      'object:scaling': onChange,
+    });
 
     canvas.requestRenderAll();
   }, []);
