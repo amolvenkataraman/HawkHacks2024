@@ -14,3 +14,4 @@ app = FastAPI()
 
 
 app.get("/verify_user", status_code=status.HTTP_202_ACCEPTED)
+
