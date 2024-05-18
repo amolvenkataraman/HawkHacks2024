@@ -1,10 +1,11 @@
 'use client'
 
-import { useRedirectFunctions } from '@propelauth/react'
-import { GetAuth } from './authinfo';
+import { useLogoutFunction, useRedirectFunctions } from '@propelauth/react'
+import { GetAuth } from './authinfo'
 
 
 export default function Navbar() {
+  const logoutFunction = useLogoutFunction();
   const { redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
 
   return (
@@ -16,7 +17,9 @@ export default function Navbar() {
           <button onClick={() => redirectToLoginPage()} className="">Login</button>
           <button onClick={() => redirectToSignupPage()} className="">Sign up</button>
           <button onClick={() => redirectToAccountPage()} className="">Account</button>
+          <button onClick={() => logoutFunction(true)} className="">Logout</button>
           <button onClick={() => location.href = '/annotate'} className="">Annotate</button>
+          <button onClick={() => location.href = '/admin'} className="">Admin</button>
         </div>
         <GetAuth />
       </div>
