@@ -1,4 +1,5 @@
 import "~/styles/globals.css";
+import Navbar from './navbar.tsx';
 
 import { GeistSans } from "geist/font/sans";
 
@@ -15,7 +16,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
