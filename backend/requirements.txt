@@ -1,4 +1,5 @@
 fastapi
 pymongo
+pymongo[srv]
 uvicorn[standard]
 propelauth_fastapi
