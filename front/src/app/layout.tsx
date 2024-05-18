@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-import Navbar from './navbar.tsx';
+import Navbar from './navbar';
 
 import { GeistSans } from "geist/font/sans";
 
@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+    <html lang="en" className={`${GeistSans.variable}`}  >
+      <body className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <Navbar />
         {children}
       </body>
