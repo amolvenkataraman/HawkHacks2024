@@ -52,8 +52,6 @@ def get_first_dataset(auth_user: User = Depends(auth.require_user)):
     dataset = dataset_collection.find_one({'completed': False})
     if not dataset: raise HTTPException(404, "No datasets left!!!")
     
-    print(dataset)
-    
     uncompleted: list[str] = []
     
     for image_id, values in dataset['images'].items():
@@ -74,8 +72,6 @@ def get_image_from_dataset(dataset_id: str, image_id: str, auth_user: User = Dep
     
     object_id = ObjectId(dataset_id)
     dataset = collection.find_one({'_id': object_id})
-    
-    print(dataset)
     
     if not dataset: raise HTTPException(404, "Dataset not found")
     
@@ -133,13 +129,10 @@ def get_admin_annotated(auth_user: User = Depends(auth.require_user)):
     datasets = dataset_collection.find({'uid': auth_user.user_id})
     if not datasets: raise HTTPException(404)
     
-    print(datasets)
-    
     ret = []
     datasets_and_finished = {}
     
     for dataset in datasets:
-        print(dataset)
         images: list[str] = dataset['annotated_images']
         ret.extend(images)
         datasets_and_finished[str(dataset['_id'])] = dataset['completed']
