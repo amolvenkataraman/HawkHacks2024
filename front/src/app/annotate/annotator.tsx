@@ -12,12 +12,14 @@ interface Dataset {
 export default function Annotator() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [imageIdList] = useState<string[]>([]);
-  const [imageIdListImage, setImageIdListIamge] = useState<string[]>([]);
-  const [curImageIndex, setCurImageIndex] = useState<number>(0);
+  const [imageIdListImage, setImageIdListIamge] = useState<string | null>(null);
+  const [imageIdListImageInfo, setImageIdListImageInfo] = useState<Object | null>({});
+
+  const [curImageIndex, setCurImageIndex] = useState<number>(237);
   const [rectGroups] = useState<fabric.Group[]>([]);
   const authInfo = useAuthInfo();
 
-  console.log(imageIdList)
+  console.log()
 
   useEffect(() => {
     const canvas: fabric.Canvas = new fabric.Canvas(canvasRef.current, {
@@ -115,7 +117,7 @@ export default function Annotator() {
 
       const load = () => {
         return new Promise((resolve, _) => {
-          fabric.Image.fromURL(imageIdList[curImageIndex] ?? 'https://picsum.photos/seed/picsum/200/300', (img) => {
+          fabric.Image.fromURL(imageIdListImage ?? `https://picsum.photos/id/${curImageIndex}/200/300`, (img) => {
             canvas.backgroundImage = img;
             canvas.setDimensions({ width: img.width ?? 0, height: img.height ?? 0 });
             resolve(null);
@@ -151,6 +153,8 @@ export default function Annotator() {
     if (!res.ok) {
       console.error('Failed to upload annotation');
     }
+
+    setCurImageIndex((prev) => prev + 1);
   }
 
   return (
