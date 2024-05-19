@@ -1,12 +1,14 @@
+from typing import Any
 from fastapi import APIRouter, status, HTTPException, Depends, Response
 from propelauth_fastapi import User
 from setup.authsetup import auth
 from setup.dbsetup import get_dataset_collection, get_users_collection
 from pydantic import BaseModel
 from setup import storeimage as storeimg
+from bson import ObjectId
 import uuid
 
-router = APIRouter("/dataset")
+router = APIRouter(prefix="/dataset")
 
 """
 import gridfs
@@ -26,19 +28,20 @@ class Dataset(BaseModel):
     
     Dataset is completed when images is empty
     """
-    _id: uuid.UUID
+    _id: str
     uid: str
     
     # We will store the id to these images as the keys and (imagetype and bool) to whether it's done
-    images: dict[str, list[str, bool]]
+    images: dict[str, list]
     annotated_images: list[str] = [] # These will be links
     completed: bool = False
+    
     
 class GetDataset(BaseModel):
     """
     A list of IDs
     """
-    dataset_id: uuid.UUID
+    dataset_id: str
     image_id_list: list[str]
 
 @router.get('/first', response_model=GetDataset)
@@ -46,36 +49,40 @@ def get_first_dataset(auth_user: User = Depends(auth.require_user)):
     dataset_collection = get_dataset_collection()
     
     # Get the first non-completed dataset
-    to_validate = dataset_collection.find_one({'completed': False})
-    if not to_validate: raise HTTPException(404, "No datasets left!!!")
+    dataset = dataset_collection.find_one({'completed': False})
+    if not dataset: raise HTTPException(404, "No datasets left!!!")
     
-    dataset: Dataset = Dataset.model_validate(dataset)
+    print(dataset)
     
     uncompleted: list[str] = []
     
-    for image_id, is_done in dataset.images.items():
-        if not is_done: uncompleted.append(image_id)
+    for image_id, values in dataset['images'].items():
+        if not values[1]: uncompleted.append(image_id)
         
-    return GetDataset(dataset_id=dataset._id, image_id_list=uncompleted)
+    return GetDataset(dataset_id=str(dataset['_id']), image_id_list=uncompleted)
 
 
 class GetImage(BaseModel):
     image: str
 
 @router.get('/image/{dataset_id}/{image_id}')
-def get_image_from_dataset(dataset_id: uuid.UUID, image_id: str, auth_user: User = Depends(auth.require_user)):
+def get_image_from_dataset(dataset_id: str, image_id: str, auth_user: User = Depends(auth.require_user)):
     """
     This allows the user to get an image from the front-end
     """
     collection = get_dataset_collection()
-    to_validate = collection.find_one({'_id': dataset_id})
     
-    dataset = Dataset.model_validate(to_validate)
+    object_id = ObjectId(dataset_id)
+    dataset = collection.find_one({'_id': object_id})
+    
+    print(dataset)
+    
+    if not dataset: raise HTTPException(404, "Dataset not found")
     
     img = storeimg.get_image(image_id)
     if not img: raise HTTPException(404, "Can't find the image")
     
-    return_image = dataset.images[image_id][0] + storeimg.convert_bytes_image_to_base64(img)
+    return_image = dataset['images'][image_id][0] + storeimg.convert_bytes_image_to_base64(img)
     
     return GetImage(image=return_image)
 
@@ -83,6 +90,8 @@ def get_image_from_dataset(dataset_id: uuid.UUID, image_id: str, auth_user: User
 class CreateDataset(BaseModel):
     "This is a list of base64 encoded images"
     images: list[str] 
+    username: str
+    password: str
 
 
 @router.post('', response_model=Dataset)
@@ -91,10 +100,12 @@ def create_dataset(payload: CreateDataset, auth_user: User = Depends(auth.requir
     This creates a dataset. User is the admin
     """
     uid = auth_user.user_id
-    _id = uuid.uuid4()
+    _id = uuid.uuid4().hex
+    
+    if payload.username != "username" or payload.password != "password": raise HTTPException(401)
     
     collection = get_dataset_collection()
-    image_map: dict[str, bool] = {}
+    image_map: dict[str, list] = {}
     
     for image in payload.images:
         encoding_split = image.find(',') # This is the formatting of the image

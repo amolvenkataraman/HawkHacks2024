@@ -1,4 +1,5 @@
 import gridfs
+from bson import ObjectId
 from .dbsetup import db
 import base64
 
@@ -17,19 +18,22 @@ def store_image_in_db(img: str) -> str:
     **MAKE SURE TO STORE THE ID FOR RETRIEVAL/DELETION**
     """
     fs = gridfs.GridFS(db)
-    return fs.put(img)
+    return str(fs.put(img))
 
 def delete_stored_image(image_id: str) -> bool:
     fs = gridfs.GridFS(db)
+    
+    object_id = ObjectId(image_id)
     try:
-         fs.delete(image_id)
+         fs.delete(object_id)
          return True
     except Exception as e:
         return False
     
 def get_image(image_id: str) -> bytes | None:
     fs = gridfs.GridFS(db)
-    file = fs.get(image_id)
+    object_id = ObjectId(image_id)
+    file = fs.get(object_id)
     
     if not file: return None
     
