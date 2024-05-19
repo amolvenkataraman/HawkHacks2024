@@ -38,7 +38,7 @@ export default function ImageUpload() {
       }
       setLoading(false);
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   };
 
   return (
