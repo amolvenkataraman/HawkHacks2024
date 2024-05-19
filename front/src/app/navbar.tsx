@@ -1,12 +1,13 @@
 'use client'
 
-import { useAuthInfo, useLogoutFunction, useRedirectFunctions, useHostedPageUrls } from '@propelauth/react'
+import { useAuthInfo, withAuthInfo, useLogoutFunction, useRedirectFunctions, useHostedPageUrls } from '@propelauth/react'
 
 function UserInfo() {
   const authInfo = useAuthInfo();
   const logoutFunction = useLogoutFunction();
   const { getLoginPageUrl, getSignupPageUrl, getAccountPageUrl } = useHostedPageUrls()
 
+  // console.log(authInfo)
   if (authInfo.loading) {
     return (
       <div className="nav-element min-w-60 space-x-4 flex justify-end">
