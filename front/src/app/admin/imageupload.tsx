@@ -46,10 +46,13 @@ export default function ImageUpload() {
     // All files prepared, now upload 
     if (images.length !== files?.length) return;
 
-    fetch('/api', {
+    fetch('http://localhost:8000/dataset', {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        authorization: `Bearer ${authInfo.accessToken}`,
+        'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify(
         {
@@ -57,8 +60,8 @@ export default function ImageUpload() {
           username: 'username',
           password: 'password',
           method: 'POST',
-          targetUrl: 'http://localhost:8000/dataset',
-          authorization: `Bearer ${authInfo.accessToken}`
+          targetUrl: '',
+          
         }
       ),
     }).then((res) => {

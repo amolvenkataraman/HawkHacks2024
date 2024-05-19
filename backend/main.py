@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pathlib import Path
 from routers import user_wallet, dataset
@@ -21,8 +22,16 @@ if (Path() / Path('.env')).exists(): load_dotenv((Path() / Path('.env')))
 Routes
 """
 
-app = FastAPI(debug=True)
+origins = ['*']
 
+app = FastAPI(debug=True)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(user_wallet.router)
 app.include_router(dataset.router)
 
