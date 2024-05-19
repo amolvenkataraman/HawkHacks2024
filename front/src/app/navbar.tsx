@@ -10,13 +10,13 @@ function UserInfo() {
   // console.log(authInfo)
   if (authInfo.loading) {
     return (
-      <div className="nav-element min-w-60 space-x-4 flex justify-end">
-        Loading...
+      <div className="nav-element min-w-60 space-x-6 flex justify-end">
+        <i>Loading...</i>
       </div>
     )
   } else if (authInfo.isLoggedIn) {
     return (
-      <div className="nav-element min-w-60 space-x-4 flex justify-end">
+      <div className="nav-element min-w-60 space-x-6 flex justify-end">
         Loading...
         <div>Welcome, {authInfo.user.email}!</div>
         <a href={getAccountPageUrl()}>Account</a>
@@ -25,7 +25,7 @@ function UserInfo() {
     )
   } else {
     return (
-      <div className="nav-element min-w-60 space-x-4 flex justify-end">
+      <div className="nav-element min-w-60 space-x-6 flex justify-end">
         <a href={getLoginPageUrl()}>Login</a>
         <a href={getSignupPageUrl()}>Sign up</a>
       </div>
@@ -39,9 +39,9 @@ export default function Navbar() {
       <div className="nav-element min-w-60">
         <a href="/" className="font-bold text-xl">DataSrc</a>
       </div>
-      <div className="flex space-x-4">
+      <div className="flex space-x-5">
         <button onClick={() => location.href = '/annotate'} className="">Annotate</button>
-        <button onClick={() => location.href = '/admin'} className="">Admin</button>
+        <button onClick={() => location.href = '/admin'} className="">Create Job</button>
       </div>
         <UserInfo />
     </nav>
