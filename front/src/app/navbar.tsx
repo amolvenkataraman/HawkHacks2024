@@ -1,11 +1,11 @@
 'use client'
 
-import { useLogoutFunction, useRedirectFunctions, useAuthInfo } from '@propelauth/react'
+import { useAuthInfo, useLogoutFunction, useRedirectFunctions, useHostedPageUrls } from '@propelauth/react'
 
 function UserInfo() {
   const authInfo = useAuthInfo();
   const logoutFunction = useLogoutFunction();
-  const { redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
+  const { getLoginPageUrl, getSignupPageUrl, getAccountPageUrl } = useHostedPageUrls()
 
   if (authInfo.loading) {
     return (
@@ -18,24 +18,21 @@ function UserInfo() {
       <div className="nav-element min-w-60 space-x-4 flex justify-end">
         Loading...
         <div>Welcome, {authInfo.user.email}!</div>
-        <button onClick={() => redirectToAccountPage()} className="">Account</button>
+        <a href={getAccountPageUrl()}>Account</a>
         <button onClick={() => logoutFunction(true)} className="">Logout</button>
       </div>
     )
   } else {
     return (
       <div className="nav-element min-w-60 space-x-4 flex justify-end">
-        <button onClick={() => redirectToLoginPage()} className="">Login</button>
-        <button onClick={() => redirectToSignupPage()} className="">Sign up</button>
+        <a href={getLoginPageUrl()}>Login</a>
+        <a href={getSignupPageUrl()}>Sign up</a>
       </div>
     )
   }
-  return "LOL"
 }
 
 export default function Navbar() {
-  const { redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
-
   return (
     <nav className="p-4 flex justify-between">
       <div className="nav-element min-w-60">
