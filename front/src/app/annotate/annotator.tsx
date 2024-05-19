@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
+import { useAuthInfo } from '@propelauth/react';
 
 interface Dataset {
   dataset_id: string;
@@ -11,8 +12,12 @@ interface Dataset {
 export default function Annotator() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [imageIdList] = useState<string[]>([]);
+  const [imageIdListImage, setImageIdListIamge] = useState<string[]>([]);
   const [curImageIndex, setCurImageIndex] = useState<number>(0);
   const [rectGroups] = useState<fabric.Group[]>([]);
+  const authInfo = useAuthInfo();
+
+  console.log(imageIdList)
 
   useEffect(() => {
     const canvas: fabric.Canvas = new fabric.Canvas(canvasRef.current, {
@@ -88,7 +93,15 @@ export default function Annotator() {
 
     const loadImg = async () => {
       // Obtain first image dataset
-      const dataset: Dataset | undefined | void = await fetch('/dataset/first').then(async (res) => {
+      const dataset: Dataset | undefined | void = await fetch('http://localhost:8000/dataset/first', {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${authInfo.accessToken}`,
+          'Access-Control-Allow-Origin': '*',
+        }
+      }).then(async (res) => {
         if (!res.ok) {
           return;
         }
@@ -114,7 +127,7 @@ export default function Annotator() {
     loadImg().catch(console.error);
 
     canvas.requestRenderAll();
-  }, [rectGroups, curImageIndex, imageIdList]);
+  }, [rectGroups, curImageIndex, imageIdList, authInfo]);
 
   // Upload annotation coordinates
   const upload = async () => {
