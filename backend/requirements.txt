@@ -3,3 +3,4 @@ pymongo
 uvicorn[standard]
 propelauth_fastapi
 certifi
+pillow

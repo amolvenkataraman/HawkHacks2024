@@ -29,7 +29,7 @@ async def verify_and_create_user(auth_user: User = Depends(auth.require_user)):
             return
         
         # Check if none, then create the new user
-        if not user: users_collection.insert_one({'_id': auth_user.user_id, 'wallets': []})
+        if not user: users_collection.insert_one({'_id': auth_user.user_id, 'wallets': [], 'money_owed': 0})
         
         raise HTTPException(400, detail="User needs to add a wallet")
         
@@ -37,13 +37,14 @@ async def verify_and_create_user(auth_user: User = Depends(auth.require_user)):
         raise
     except Exception as e:
         raise HTTPException(400, detail=str(e))
-    
+
     
 class Wallet(BaseModel):
     wallet: str
     
 class GetWallet(BaseModel):
     wallets: list[str]    
+    
     
 @router.get('/wallet', response_model=GetWallet)
 def get_wallet(auth_user: User = Depends(auth.require_user)):
