@@ -1,4 +1,5 @@
-const nearAPI = require("near-api-js");
+import * as nearAPI from "near-api-js";
+
 const { keyStores, KeyPair, connect } = nearAPI;
 
 async function initializeConnection() {
@@ -12,7 +13,7 @@ async function initializeConnection() {
   const keyPair = KeyPair.fromString(PRIVATE_KEY);
   
   // Add the key pair to the key store
-  await myKeyStore.setKey("testnet", "example-account.testnet", keyPair);
+  await myKeyStore.setKey("testnet", "bobliuuuu.testnet", keyPair);
 
   // Define the connection configuration
   const connectionConfig = {
@@ -27,9 +28,16 @@ async function initializeConnection() {
   // Create a connection to the NEAR testnet
   const nearConnection = await connect(connectionConfig);
 
-  const account = await nearConnection.account("example-account.testnet");
+  const account = await nearConnection.account("bobliuuuu.testnet");
   const details = await account.getAccountDetails();
   console.log(details);
+
+  const account2 = await nearConnection.account("m4tth.testnet");
+  
+  await account.sendMoney(
+    "m4tth.testnet", // receiver account
+    "100000000000000000000000" // amount in yoctoNEAR (0.1 NEAR)
+  );
 
   return nearConnection;
 }
