@@ -1,0 +1,4 @@
+[rpc_endpoints]
+local-c = "http://localhost:9650/ext/bc/C/rpc"
+mysubnet = "http://localhost:9650/ext/bc/mysubnet/rpc"
+anothersubnet = "http://localhost:9650/ext/bc/BASE58_BLOCKCHAIN_ID/rpc"
