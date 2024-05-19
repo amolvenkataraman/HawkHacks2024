@@ -61,7 +61,7 @@ export default function ImageUpload() {
           password: 'password',
           method: 'POST',
           targetUrl: '',
-          
+
         }
       ),
     }).then((res) => {
@@ -73,8 +73,9 @@ export default function ImageUpload() {
   }, [images])
 
   return (
-    <div className="flex flex-col gap-5 items-center">
-      <div className="flex justify-center items-center border border-black rounded-lg py-3 backdrop-blur backdrop-brightness-50 gap-2">
+    <div className="flex flex-col gap-5 items-center border border-black rounded-lg py-3 backdrop-blur backdrop-brightness-50">
+      <input placeholder="Wallet" className="bg-transparent border-2 border-white rounded-md px-2 py-1" />
+      <div className="flex justify-center items-center">
         <input type="file" accept=".png,.jpg" onChange={onFileChange} multiple className="max-w-[50%]" />
 
         <button className="border-2 border-white rounded-md px-2 py-1 " onClick={onUpload} >Upload</button>
