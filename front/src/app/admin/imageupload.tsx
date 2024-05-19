@@ -17,7 +17,10 @@ export default function ImageUpload() {
   };
 
   const onUpload = (event: MouseEvent) => {
-    if (!files) return;
+    if (!files) {
+      event.preventDefault();
+      return;
+    }
 
     Array.from(files).forEach((file) => {
       // Convert image to base64
@@ -32,12 +35,8 @@ export default function ImageUpload() {
 
         setLoading(false);
       };
-
       reader.readAsDataURL(file);
-
     });
-
-    event.preventDefault();
   };
 
   useEffect(() => {
@@ -66,8 +65,9 @@ export default function ImageUpload() {
   }, [images])
 
   return (
-    <div className="flex flex-col gap-5 items-center">
-      <div className="flex justify-center items-center border border-black rounded-lg max-w-[70%] px-3 py-3 backdrop-blur backdrop-brightness-50">
+    <div className="flex flex-col gap-5 items-center border border-black rounded-lg px-3 py-3 backdrop-blur backdrop-brightness-50">
+      <input placeholder="Wallet address" className="bg-transparent border-2 border-white px-2 py-1" />
+      <div className="flex justify-center items-center">
         <input type="file" accept=".png,.jpg" onChange={onFileChange} multiple className="" />
         <button className="border-2 border-white rounded-md px-2 py-1 " onClick={onUpload} >Upload</button>
       </div>
