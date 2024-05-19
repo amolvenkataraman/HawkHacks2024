@@ -122,11 +122,64 @@ def create_dataset(payload: CreateDataset, auth_user: User = Depends(auth.requir
     return dataset
 
 
-@router.post('/uploadannotated')
-def upload_annotated_dataset(auth_user: User = Depends(auth.require_user)):
+class GetAnnotated(BaseModel):
+    image_links: list[str]
+    datasets_and_finished: dict
+
+@router.get('', response_model=GetAnnotated)
+def get_admin_annotated(auth_user: User = Depends(auth.require_user)):
+    dataset_collection = get_dataset_collection()
+    
+    datasets = dataset_collection.find({'uid': auth_user.user_id})
+    if not datasets: raise HTTPException(404)
+    
+    print(datasets)
+    
+    ret = []
+    datasets_and_finished = {}
+    
+    for dataset in datasets:
+        print(dataset)
+        images: list[str] = dataset['annotated_images']
+        ret.extend(images)
+        datasets_and_finished[str(dataset['_id'])] = dataset['completed']
+    
+    return GetAnnotated(image_links=ret, datasets_and_finished=datasets_and_finished)
+
+class CreateAnnotated(BaseModel):
+    dataset_id: str
+    image_id: str
+    
+    coordinates: list[dict]
+    
+
+@router.post('/uploadannotated', status_code=200)
+def upload_annotated_dataset(payload: CreateAnnotated, auth_user: User = Depends(auth.require_user)):
     users_collection = get_users_collection()
     dataset_collection = get_dataset_collection()
     
+    object_id = ObjectId(payload.dataset_id)
+    dataset = dataset_collection.find_one({'_id': object_id})
+    
+    if not dataset: raise HTTPException(404)
+    
+    image_map: dict = dataset['images']
+    if not image_map.get(payload.image_id): raise HTTPException(404)
+    
+    image_map[1] = True
+    completed = True
+    
+    # Check if all the maps are true not
+    for image in dataset['images']:
+        image: dict
+        for value in image.values():
+            if not value[1]: completed = False
+            
+        if not completed: break
+        
+    if completed: dataset_collection.update_one({'_id': object_id}, {'$set': {'completed': completed}})
+    
     increment_factor = 0.03
-    user = users_collection.update_one({'_id': auth_user.user_id}, {'$inc', {'money_owed', increment_factor}})
+    users_collection.update_one({'_id': auth_user.user_id}, {'$inc', {'money_owed', increment_factor}})
+    
     
