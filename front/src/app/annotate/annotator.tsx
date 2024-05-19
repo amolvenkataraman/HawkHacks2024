@@ -5,7 +5,7 @@ import { fabric } from 'fabric';
 
 export default function Annotator() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [coords, setCoords] = useState<number[]>();
+  const [rects] = useState<fabric.Rect[]>([]);
 
   useEffect(() => {
     const canvas: fabric.Canvas = new fabric.Canvas(canvasRef.current, {
@@ -15,52 +15,70 @@ export default function Annotator() {
       backgroundColor: undefined,
     });
 
-    // Load background
-    fabric.Image.fromURL('https://ipfs.io/ipfs/QmUa2xdD3kvQ3ZwnTADpAukcExtCv6Xaf9FGcPNyQKqKG4', (img) => {
-      img.scaleToHeight(canvas.height ?? 0);
-      img.selectable = false;
-      canvas.backgroundImage = img;
-      canvas.setDimensions({ width: img.width ?? 0, height: img.height ?? 0 });
+    let initPos = { x: 0, y: 0 };
+    canvas.on('mouse:down', (e) => {
+      initPos = { x: e.pointer?.x ?? 0, y: e.pointer?.y ?? 0 }
+    });
+    canvas.on('mouse:up', (e) => {
+      const pos = { x: e.pointer?.x ?? 0, y: e.pointer?.y ?? 0 }
+      const pos1 = { x: Math.min(initPos.x, pos.x), y: Math.min(initPos.y, pos.y) }
+      const pos2 = { x: Math.max(initPos.x, pos.x), y: Math.max(initPos.y, pos.y) }
+
+      // Reject if size is too small
+      if (pos2.x - pos1.x < 3 || pos2.y - pos1.y < 3) {
+        return;
+      }
+
+      const rect = new fabric.Rect({
+        left: pos1.x,
+        top: pos1.y,
+        fill: 'rgba(0,0,0,0.3)',
+        width: pos2.x - pos1.x,
+        height: pos2.y - pos1.y,
+        selectable: false,
+        lockRotation: true,
+      });
+      canvas.add(rect);
+      rects.push(rect);
+      canvas.bringToFront(rect);
       canvas.requestRenderAll();
     });
 
-    // Interactive rectangle for image annotation
-    const rect = new fabric.Rect({
-      left: 100,
-      top: 100,
-      fill: 'rgba(0,0,0,0.3)',
-      width: 200,
-      height: 200,
-      selectable: true,
-      hasRotatingPoint: false,
-      lockRotation: true,
-    });
-    setCoords([rect.left ?? 0, rect.top ?? 0, rect.getScaledWidth(), rect.getScaledHeight()]);
-
-    // Scale to remaining webpage size
-    canvas.setDimensions({
-      width: window.innerWidth,
-      height: window.innerHeight,
+    // Clear annotation key
+    canvas.on('mouse:dblclick', (e) => {
+      const rect = e.target as fabric.Rect;
+      if (rects.includes(rect)) {
+        canvas.remove(rect);
+        rects.splice(rects.indexOf(rect), 1);
+        canvas.requestRenderAll();
+      }
     });
 
-    // On rect transform
-    function onChange(e: fabric.IEvent) {
-      setCoords([e.target?.left ?? 0, e.target?.top ?? 0, e.target?.getScaledWidth() ?? 0, e.target?.getScaledHeight() ?? 0]);
+    const loadImg = async () => {
+      function load() {
+        return new Promise((resolve, _) => {
+          fabric.Image.fromURL('https://ipfs.io/ipfs/QmUa2xdD3kvQ3ZwnTADpAukcExtCv6Xaf9FGcPNyQKqKG4', (img) => {
+            canvas.backgroundImage = img;
+            canvas.setDimensions({ width: img.width ?? 0, height: img.height ?? 0 });
+            resolve(null);
+          });
+        });
+      }
+      await load();
     }
-
-    canvas.add(rect);
-
-    canvas.on({
-      'object:moving': onChange,
-      'object:scaling': onChange,
-    });
+    loadImg().catch(console.error);
 
     canvas.requestRenderAll();
-
   }, []);
 
   // Upload annotation coordinates
   const upload = async () => {
+    const coords = rects.map((rect) => ({
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
+    }));
     console.log(coords);
     const res = await fetch('/TODO', {
       method: 'POST',
