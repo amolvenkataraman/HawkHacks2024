@@ -19,7 +19,10 @@ export default function ImageUpload() {
   };
 
   const onUpload = (event: MouseEvent) => {
-    if (!files) return;
+    if (!files) {
+      event.preventDefault();
+      return;
+    }
 
     Array.from(files).forEach((file) => {
       // Convert image to base64
@@ -34,11 +37,8 @@ export default function ImageUpload() {
 
         setLoading(false);
       };
-
       reader.readAsDataURL(file);
-
     });
-    
     event.preventDefault();
   };
 
@@ -76,6 +76,7 @@ export default function ImageUpload() {
     <div className="flex flex-col gap-5 items-center">
       <div className="flex justify-center items-center border border-black rounded-lg py-3 backdrop-blur backdrop-brightness-50 gap-2">
         <input type="file" accept=".png,.jpg" onChange={onFileChange} multiple className="max-w-[50%]" />
+
         <button className="border-2 border-white rounded-md px-2 py-1 " onClick={onUpload} >Upload</button>
         <button className="border-2 border-white rounded-md px-2 py-1 ">Pay</button>
       </div>
