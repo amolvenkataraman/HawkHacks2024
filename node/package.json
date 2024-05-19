@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@web3-storage/w3up-client": "^13.1.1",
+    "files-from-path": "^1.0.4",
+    "near-api-js": "^4.0.1"
+  },
+  "type": "module"
+}
