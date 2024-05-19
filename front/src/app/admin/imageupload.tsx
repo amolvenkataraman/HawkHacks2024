@@ -1,5 +1,6 @@
 'use client'
 
+import { type MouseEvent } from "react";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { type ChangeEvent } from "react";
 
@@ -15,9 +16,9 @@ export default function ImageUpload() {
     }
   };
 
-  const onUpload = (event: any) => {
+  const onUpload = (event: MouseEvent) => {
     if (!files) return;
-    
+
     Array.from(files).forEach((file) => {
       // Convert image to base64
       const reader = new FileReader();
@@ -28,12 +29,12 @@ export default function ImageUpload() {
         // Send base64 to server
         setLoading(true);
         setImages((prev) => [...prev, base64]);
-        
+
         setLoading(false);
       };
-      
+
       reader.readAsDataURL(file);
-      
+
     });
 
     event.preventDefault();
@@ -49,10 +50,11 @@ export default function ImageUpload() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(
-        { 
-          images: images, 
-          username: 'username', 
-          password: 'password' }
+        {
+          images: images,
+          username: 'username',
+          password: 'password'
+        }
       ),
     }).then((res) => {
       if (!res.ok) console.error('Failed to upload image');
@@ -71,14 +73,14 @@ export default function ImageUpload() {
       </div>
       <div className="flex flex-wrap justify-center items-end gap-2">
         <>
-        {files && Array.from(files).map((file, index) => {
-          return (
-            <div className="text-center" key={index}>
-              <div>{file && `${file.name} - ${file.type}`}</div>
-              <img src={ URL.createObjectURL(file) } />
-            </div>
-          );
-        })}
+          {files && Array.from(files).map((file, index) => {
+            return (
+              <div className="text-center" key={index}>
+                <div>{file && `${file.name} - ${file.type}`}</div>
+                <img src={URL.createObjectURL(file)} />
+              </div>
+            );
+          })}
         </>
       </div>
     </div>
