@@ -10,6 +10,7 @@ This file will setup the basics of a mongoDB User
 *User*
 id: UUID
 wallet: array[str]
+money_owed: float
 """
 
 router = APIRouter(prefix='/users')
@@ -38,7 +39,20 @@ async def verify_and_create_user(auth_user: User = Depends(auth.require_user)):
     except Exception as e:
         raise HTTPException(400, detail=str(e))
 
+
+class GetMoneyOwed(BaseModel):
+    balance: float
+
+@router.get('/balance', response_model=GetMoneyOwed)
+def get_money_owed(auth_user: User = Depends(auth.require_user)):
+    users_collection = get_users_collection()
+    user: dict = users_collection.find_one({ '_id': auth_user.user_id })
     
+    if not user: raise HTTPException(400, detail="Need to verify user before accessing")
+    
+    return GetMoneyOwed(balance=user['money_owed'])
+    
+
 class Wallet(BaseModel):
     wallet: str
     
