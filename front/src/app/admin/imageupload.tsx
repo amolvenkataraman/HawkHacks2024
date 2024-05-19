@@ -73,7 +73,7 @@ export default function ImageUpload() {
       </div>
       <div className="flex flex-wrap justify-center items-end gap-2">
         <>
-          {files && Array.from(files).map((file, index) => {
+          {files !== null && Array.from(files).map((file, index) => {
             return (
               <div className="text-center" key={index}>
                 <div>{file && `${file.name} - ${file.type}`}</div>
