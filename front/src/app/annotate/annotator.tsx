@@ -141,9 +141,9 @@ export default function Annotator() {
   }
 
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='flex flex-col justify-center items-center gap-5'>
       <canvas ref={canvasRef} />
-      <button onClick={upload}>Upload Annotation</button>
+      <button onClick={upload} className='bg-transparent border-2 border-white px-2 py-1'>Upload Annotation</button>
     </div>
   );
 }
