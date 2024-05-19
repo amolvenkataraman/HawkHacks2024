@@ -37,7 +37,7 @@ export default function Navbar() {
   return (
     <nav className="p-4 flex justify-between">
       <div className="nav-element min-w-60">
-        <a href="/" className="font-bold text-xl">HawkHacks2024</a>
+        <a href="/" className="font-bold text-xl">DataSrc</a>
       </div>
       <div className="flex space-x-4">
         <button onClick={() => location.href = '/annotate'} className="">Annotate</button>
