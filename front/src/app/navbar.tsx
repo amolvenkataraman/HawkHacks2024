@@ -17,9 +17,7 @@ function UserInfo() {
   } else if (authInfo.isLoggedIn) {
     return (
       <div className="nav-element min-w-60 space-x-6 flex justify-end">
-        Loading...
-        <div>Welcome, {authInfo.user.email}!</div>
-        <a href={getAccountPageUrl()}>Account</a>
+        <a href={getAccountPageUrl()}>{authInfo.user.email}</a>
         <button onClick={() => logoutFunction(true)} className="">Logout</button>
       </div>
     )
