@@ -1,3 +1,5 @@
+'use client'
+
 import Annotator from './annotator';
 
 export default function Annotate() {

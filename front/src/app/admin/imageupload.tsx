@@ -1,13 +1,15 @@
 'use client'
 
+import { useAuthInfo } from "@propelauth/react";
 import { type MouseEvent } from "react";
-import { MouseEventHandler, useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useState, useRef } from "react";
 import { type ChangeEvent } from "react";
 
 export default function ImageUpload() {
   const [files, setFiles] = useState<FileList | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const authInfo = useAuthInfo();
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -25,7 +27,7 @@ export default function ImageUpload() {
 
       reader.onloadend = async (ev) => {
         const base64 = reader.result as string;
-        console.log(base64);
+
         // Send base64 to server
         setLoading(true);
         setImages((prev) => [...prev, base64]);
@@ -36,7 +38,7 @@ export default function ImageUpload() {
       reader.readAsDataURL(file);
 
     });
-
+    
     event.preventDefault();
   };
 
@@ -44,7 +46,7 @@ export default function ImageUpload() {
     // All files prepared, now upload 
     if (images.length !== files?.length) return;
 
-    fetch('/api/callbackend', {
+    fetch('/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +55,10 @@ export default function ImageUpload() {
         {
           images: images,
           username: 'username',
-          password: 'password'
+          password: 'password',
+          method: 'POST',
+          targetUrl: 'http://localhost:8000/dataset',
+          authorization: `Bearer ${authInfo.accessToken}`
         }
       ),
     }).then((res) => {
@@ -62,14 +67,14 @@ export default function ImageUpload() {
 
     setImages([]);
     setFiles(null);
-
   }, [images])
 
   return (
     <div className="flex flex-col gap-5 items-center">
-      <div className="flex justify-center items-center border border-black rounded-lg max-w-[70%] px-3 py-3 backdrop-blur backdrop-brightness-50">
-        <input type="file" accept=".png,.jpg" onChange={onFileChange} multiple className="" />
+      <div className="flex justify-center items-center border border-black rounded-lg py-3 backdrop-blur backdrop-brightness-50 gap-2">
+        <input type="file" accept=".png,.jpg" onChange={onFileChange} multiple className="max-w-[50%]" />
         <button className="border-2 border-white rounded-md px-2 py-1 " onClick={onUpload} >Upload</button>
+        <button className="border-2 border-white rounded-md px-2 py-1 ">Pay</button>
       </div>
       <div className="flex flex-wrap justify-center items-end gap-2">
         <>
