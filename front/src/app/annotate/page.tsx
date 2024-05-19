@@ -19,7 +19,7 @@ export default function Annotate() {
     });
 
     // Load background (non-interactive)
-    fabric.Image.fromURL('https://via.placeholder.com/150', (img) => {
+    fabric.Image.fromURL('https://ipfs.io/ipfs/QmUa2xdD3kvQ3ZwnTADpAukcExtCv6Xaf9FGcPNyQKqKG4', (img) => {
       img.scaleToHeight(canvas.height ?? 0);
       img.selectable = false;
       canvas.backgroundImage = img;

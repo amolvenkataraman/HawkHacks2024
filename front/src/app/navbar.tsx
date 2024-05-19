@@ -39,7 +39,6 @@ export default function Navbar() {
         <a href="/" className="font-bold text-xl">HawkHacks2024</a>
       </div>
       <div className="flex space-x-4">
-        <button onClick={() => location.href = '/'} className="">Home</button>
         <button onClick={() => location.href = '/annotate'} className="">Annotate</button>
         <button onClick={() => location.href = '/admin'} className="">Admin</button>
       </div>
