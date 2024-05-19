@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI
 from dotenv import load_dotenv
 from pathlib import Path
 from routers import user_wallet
@@ -16,7 +16,6 @@ Load environment
 """
 # Load the .env file in the environment
 if (Path() / Path('.env')).exists(): load_dotenv((Path() / Path('.env')))
-
 
 """
 Routes
